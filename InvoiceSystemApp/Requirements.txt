@@ -1,0 +1,45 @@
+﻿Invoice System
+
+tblcustomers
+	CustomerId
+	CustomerName
+	EmailAddress
+	MobileNumber
+	City
+
+tblproducts
+	ProductId
+	ProductName
+	Rate
+	Gst
+	StockQuantity
+
+tblinvoice_details
+	InvoiceId
+	CustomerId(FK)
+	InvoiceDate
+	InvoiceAmount
+
+tblinvoice_products
+	InvoiceProductId
+	InvoiceId(FK)
+	ProductId(FK)
+	Quantity
+
+tblinvoice_payments
+	PaymentId
+	InvoiceId(FK)
+	PaymentAmount
+	PaymentMode
+	PaymentDescription
+
+=> Perform CRUD Operations on customer(using Model Form) & products(using Javascript) table
+=> Generate New Invoice & Add purchased products
+=> View All Invoices along with total , paid, remaining amount & current payment status(Unpaid, PartialPaid, Paid)
+=> Pay Invoice wise amount
+=> View Invoice Wise Details
+=> Print Invoice
+
+
+
+
