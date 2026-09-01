@@ -43,3 +43,44 @@ tblinvoice_payments
 
 
 
+create database InvoiceSystemDB;
+use InvoiceSystemDB;
+create table tblcustomers
+(
+	CustomerId int identity primary key,
+	CustomerName varchar(40) not null,
+	EmailAddress varchar(100),
+	MobileNumber varchar(15),
+	City varchar(40)
+)
+create table tblproducts
+(
+	ProductId int identity primary key,
+	ProductName varchar(50) not null unique,
+	Rate float not null,
+	Gst float not null,
+	StockQuantity float not null
+)
+create table  tblinvoice_details
+(
+	InvoiceId int identity primary key,
+	CustomerId int constraint fkcustid references tblcustomers(CustomerId) not null,
+	InvoiceDate date not null,
+	InvoiceAmount float
+)
+create table  tblinvoice_products
+(
+	InvoiceProductId int identity primary key,
+	InvoiceId int constraint fkinvoiceid references tblinvoice_details(InvoiceId)  not null,
+	ProductId int constraint pkprid references tblproducts(ProductId)  not null,
+	Quantity int not null
+)
+create table tblinvoice_payments
+(
+	PaymentId int identity primary key,
+	InvoiceId int constraint fkinvoiceidpayment references tblinvoice_details(InvoiceId)  not null,
+	PaymentAmount float not null, 
+	PaymentMode varchar(40) not null,
+	PaymentDescription varchar(100)
+
+	)
