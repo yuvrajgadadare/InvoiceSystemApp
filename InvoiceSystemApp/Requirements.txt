@@ -6,7 +6,7 @@ tblcustomers
 	EmailAddress
 	MobileNumber
 	City
-
+	safd
 tblproducts
 	ProductId
 	ProductName
