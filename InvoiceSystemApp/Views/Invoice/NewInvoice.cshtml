@@ -1,0 +1,105 @@
+﻿ 
+@{
+    Layout = "~/Views/Shared/InvoiceLayout.cshtml";
+}
+<div class="container-fluid">
+    <h4>New Invoice</h4>
+    <div class="row">
+        <table class="table table-borderless">
+            <tr>
+                <td style="text-align:right">Customer Name:</td>
+                <td>
+                    @Html.DropDownList("ddcustomer", ViewBag.customers as SelectList, "Select Customer", new { @class = "form-control" })
+                </td>
+                <td style="text-align:right">Invoice Date:</td>
+                <td>
+                    <input type="date" class="form-control" id="txtdate" />
+                </td>
+            </tr>
+        </table>
+        <table class="table table-borderless">
+            <tr>
+                <td style="width:20%">
+                    <label>Product</label>
+                    @Html.DropDownList("ddproduct", ViewBag.products as SelectList, "Select Product", new { @class = "form-control", @onchange = "fetchProduct()" })
+                </td>
+                <td style="width:10%">
+                    <label>Rate</label>
+                    <input type="text" class="form-control" id="txtrate" disabled />
+                </td>
+                <td style="width:10%">
+                    <label>Gst</label>
+                    <input type="text" class="form-control" id="txtgst" disabled />
+                </td>
+                <td style="width:10%">
+                    <label>Stock</label>
+                    <input type="text" class="form-control" id="txtstock" disabled />
+                </td>
+                <td style="width:10%">
+                    <label>Quantity</label>
+                    <input type="text" class="form-control" id="txtquantity" onkeyup="calculate()" />
+                </td>
+                <td style="width:10%">
+                    <label>Total</label>
+                    <input type="text" class="form-control" id="txttotal" disabled />
+                </td>
+                <td>
+                    <br />
+                    <input type="button" class="btn btn-primary btn-sm" id="btnadd" value="+" onclick="addProduct()" />
+                </td>
+            </tr>
+        </table>
+
+    </div>
+    <hr />
+    <div class="row">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Product Name</th>
+                    <th>Rate</th>
+                    <th>Gst</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="tbldata"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" style="text-align:right">Total = </td>
+                    <td><b id="finaltotal"></b></td>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+    <div class="row">
+        <input type="button" value="Submit" class="btn btn-primary" />
+    </div>
+</div>
+
+<script>
+    const fetchProduct=async()=>{
+        var pid=document.getElementById("ddproduct").value;
+   
+        const response = await fetch("/Product/GetProduct/"+pid)
+        const p=await response.json();
+        console.log(p);
+        document.getElementById("txtrate").value=p.rate;
+        document.getElementById("txtgst").value = p.gst;
+        document.getElementById("txtstock").value = p.stockQuantity;
+        calculate();
+    }
+   
+
+    const calculate=()=>{
+    
+        var rate = Number(document.getElementById("txtrate").value);
+        var gst = Number(document.getElementById("txtgst").value);
+        var qty = Number(document.getElementById("txtquantity").value);
+        var total=(rate+(rate*gst/100))*qty;
+        document.getElementById("txttotal").value=total.toFixed(2);
+    
+    }
+</script>

@@ -1,7 +1,19 @@
+using InvoiceSystemApp.Models;
+using InvoiceSystemApp.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddDbContext<InvoiceSystemDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MyCon"));
+});
+builder.Services.AddTransient<ICustomerService, CustomerService>();
+builder.Services.AddTransient<IProductService,ProductService>();
+builder.Services.AddTransient<IInvoiceService,InvoiceService>();
 
 var app = builder.Build();
 
