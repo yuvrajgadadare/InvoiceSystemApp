@@ -1,4 +1,5 @@
-﻿using InvoiceSystemApp.Services;
+﻿using InvoiceSystemApp.Dtos;
+using InvoiceSystemApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -15,9 +16,10 @@ namespace InvoiceSystemApp.Controllers
             this.productService = productService;
             this.invoiceService = invoiceService;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            List<InvoiceModelDTO> lst =await  invoiceService.GetInvoices();
+            return View(lst);
         }
         public async Task<IActionResult> NewInvoice()
         {
@@ -27,6 +29,11 @@ namespace InvoiceSystemApp.Controllers
             return View();
         }
 
-         
+        [HttpPost]
+        public async Task<JsonResult> GenerateInvoice([FromBody] InvoiceDTO d)
+        {
+            InvoiceDTO sd= await invoiceService.AddInvoice(d);
+            return Json(sd);
+        }
     }
 }

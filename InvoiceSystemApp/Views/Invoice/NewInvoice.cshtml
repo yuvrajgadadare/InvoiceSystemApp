@@ -75,17 +75,21 @@
 
     </div>
     <div class="row">
-        <input type="button" value="Submit" class="btn btn-primary" />
+        <input type="button" value="Submit" class="btn btn-primary" onclick="GenerateNewInvoice()"/>
     </div>
 </div>
 
 <script>
+    var pname="";
+    var final=0;
+    var products=[];
     const fetchProduct=async()=>{
         var pid=document.getElementById("ddproduct").value;
    
         const response = await fetch("/Product/GetProduct/"+pid)
         const p=await response.json();
         console.log(p);
+        pname = p.productName;
         document.getElementById("txtrate").value=p.rate;
         document.getElementById("txtgst").value = p.gst;
         document.getElementById("txtstock").value = p.stockQuantity;
@@ -101,5 +105,57 @@
         var total=(rate+(rate*gst/100))*qty;
         document.getElementById("txttotal").value=total.toFixed(2);
     
+    }
+
+    const addProduct=()=>{
+    
+        var pid=document.getElementById("ddproduct").value;
+      //  console.log(pid+" "+pname );
+        var rate = Number(document.getElementById("txtrate").value);
+        var gst = Number(document.getElementById("txtgst").value);
+        var qty = Number(document.getElementById("txtquantity").value);
+        var total = Number(document.getElementById("txttotal").value);
+        var st = { "ProductId":pid,"ProductName":pname,"Rate":rate,"Gst":gst,"Quantity":qty,"Total":total};
+        products.push(st);
+        console.log(products);
+        displayTable();
+    }
+
+    const displayTable=()=>{
+        
+        final=0;
+        var data="";
+        products.forEach(function(d,k){
+            final=final+Number(d.Total);
+            data+="<tr><td>"+(k+1)+"</td><td>"+d.ProductName+"</td><td>"+d.Rate+"</td><td>"+d.Gst+"</td><td>"+d.Quantity+"</td><td>"+d.Total+"</td></tr>";
+        })
+        document.getElementById("tbldata").innerHTML=data;
+        document.getElementById("finaltotal").innerHTML=final;
+        
+    }
+
+    const GenerateNewInvoice=async()=>{
+        var cid=document.getElementById("ddcustomer").value;
+        var dt=document.getElementById("txtdate").value;
+        var st={"CustomerId":cid,"InvoiceDate":dt,"InvoiceAmount":final,"InvoiceProducts":products};
+
+        const response=await fetch("/Invoice/GenerateInvoice",{
+            method:"post",
+            "body":JSON.stringify(st),
+            "headers":{
+                "content-type":"application/json"
+            }
+        });
+        if(response.status==200){
+        var obj=await response.json();
+        console.log(obj);
+        
+        alert("Invoice Generated Successfully");
+        window.location.reload();
+        }
+        else{
+            alert("Error!!");
+        }
+
     }
 </script>

@@ -1,4 +1,45 @@
-﻿@{
+﻿@model IEnumerable<InvoiceSystemApp.Dtos.InvoiceModelDTO>
+
+@{
     Layout = "~/Views/Shared/InvoiceLayout.cshtml";
 }
-<h2>Invoice</h2>
+<h2>All Invoice</h2>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Invoice Date</th>
+                    <th>Customer Name</th>
+                    <th>Total Amount</th>
+                    <th>Paid Amount</th>
+                    <th>Remaining Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                }
+                @foreach(var item in Model){
+                    <tr>
+                        <td>@i</td>
+                        <td>@item.InvoiceDate.ToShortDateString()</td>
+                        <td>@item.CustomerName</td>
+                        <td>@item.InvoiceAmount</td>
+                        <td>@item.PaidAmount</td>
+                        <td>@item.RemainingAmount</td>
+                        <td>@item.Status</td>
+                        <td></td>
+                    </tr>
+                    i++;
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+
+    </div>
