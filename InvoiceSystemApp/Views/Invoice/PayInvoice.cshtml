@@ -1,0 +1,86 @@
+﻿ 
+ @using InvoiceSystemApp.Dtos
+ @model PaymentFormDTO
+@{
+    Layout = "~/Views/Shared/InvoiceLayout.cshtml";
+
+    InvoiceModelDTO m = (InvoiceModelDTO)ViewData["invoice"];
+}
+<div class="row">
+    <div class="col-md-8">
+       @using(Html.BeginForm())
+       {
+            <div class="card">
+                <div class="card-header"><h4>Pay Invoice</h4></div>
+                <div class="card-body">
+                  <div class="row">
+                      <div class="col-md-6">
+                            <div class="mb-3">
+                                <label>Customer Name</label>
+                                <input type="text" value="@m.CustomerName" class="form-control" disabled />
+                            </div>
+                            <div class="mb-3">
+                                <label>Invoice Id</label>
+                                @Html.TextBoxFor(e => e.InvoiceId, new { @class = "form-control" })
+                            </div>
+                            <div class="mb-3">
+                                <label>Invoice Date</label>
+                                <input type="text" value="@m.InvoiceDate.ToShortDateString()" class="form-control" disabled />
+                            </div>
+                            <div class="mb-3">
+                                <label>Invoice Amount</label>
+                                <input type="text" value="@m.InvoiceAmount" class="form-control" disabled />
+                            </div>
+                            <div class="mb-3">
+                                <label>Paid Amount</label>
+                                <input type="text" value="@m.PaidAmount" class="form-control" disabled />
+                            </div>
+                            <div class="mb-3">
+                                <label>Remaining Amount</label>
+                                <input type="text" value="@m.RemainingAmount" class="form-control" disabled />
+                            </div>
+                            
+                      </div>
+                      <div class="col-md-6">
+                            <div class="mb-3">
+                                <label>Payment Date</label>
+                                @Html.TextBoxFor(e => e.PaymentDate, new { @type = "date", @class = "form-control" })
+                            </div>
+                            <div class="mb-3">
+                                <label>Payment Amount</label>
+                                @Html.TextBoxFor(e => e.PaymentAmount, new { @class = "form-control" })
+                            </div>
+                            <div class="mb-3">
+                                <label>Payment Mode</label>
+                                @Html.TextBoxFor(e => e.PaymentMode, new { @class = "form-control" })
+                            </div>
+                            <div class="mb-3">
+                                <label>Description</label>
+                                @Html.TextAreaFor(e => e.PaymentDescription, new { @class = "form-control" })
+                            </div>
+                            <div class="mb-3">
+                                @if (m.RemainingAmount == 0)
+                                {
+                                    <input type="submit" value="Submit" class="btn btn-primary" disabled />
+
+                                }
+                                else
+                                {
+                                    <input type="submit" value="Submit" class="btn btn-primary"  />
+
+                                }
+                                <input type="reset" value="Reset" class="btn btn-danger" />
+                    <p>
+                        <h4 class="text-succes">@ViewBag.msg</h4>
+                    </p>
+                            </div>
+                            
+                      </div>
+                  </div>
+
+                </div>
+                
+            </div>
+       }
+    </div>
+</div>

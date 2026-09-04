@@ -12,6 +12,9 @@
         public double PaidAmount { get; set; }
         public double RemainingAmount { get; set; }
         public  string Status{ get; set; }
+         
+        public List<InvoiceProductDTO> Products { get; set; }
+        public Task<List<PaymentFormDTO>> Payments { get; set; }
 
     }
 }

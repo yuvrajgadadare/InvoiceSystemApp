@@ -35,5 +35,39 @@ namespace InvoiceSystemApp.Controllers
             InvoiceDTO sd= await invoiceService.AddInvoice(d);
             return Json(sd);
         }
+
+
+        public async Task<IActionResult> PayInvoice(int id)
+        {
+            InvoiceModelDTO m =await invoiceService.GetInvoice(id);
+            ViewData["invoice"] = m;
+            PaymentFormDTO p = new PaymentFormDTO()
+            {
+                InvoiceId = id
+            };
+            return View(p);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PayInvoice(PaymentFormDTO pd)
+        {
+          PaymentFormDTO mp=  await invoiceService.SubmitPayment(pd);
+            InvoiceModelDTO m = await invoiceService.GetInvoice(pd.InvoiceId);
+            ModelState.Clear();
+            ViewBag.msg = "Payment accepted successfully";
+            ViewData["invoice"] = m;
+            PaymentFormDTO p = new PaymentFormDTO()
+            {
+                InvoiceId = pd.InvoiceId
+            };
+            return View(p);
+        }
+
+        public async Task<IActionResult> ViewInvoice(int id)
+        {
+            InvoiceModelDTO m =await  invoiceService.GetInvoice(id);
+            CustomerDTO c = await customerService.GetCustomer(m.CustomerId);
+            ViewData["customer"] = c;
+            return View(m); 
+        }
     }
 }

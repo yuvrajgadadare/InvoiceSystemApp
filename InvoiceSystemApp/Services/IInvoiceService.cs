@@ -8,5 +8,6 @@ namespace InvoiceSystemApp.Services
         Task<InvoiceDTO> AddInvoice(InvoiceDTO d);
         Task<List<InvoiceModelDTO>> GetInvoices();
         Task<InvoiceModelDTO> GetInvoice(int Id);
+        Task<PaymentFormDTO> SubmitPayment(PaymentFormDTO p);
     }
 }

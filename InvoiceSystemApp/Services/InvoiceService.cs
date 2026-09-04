@@ -32,22 +32,23 @@ namespace InvoiceSystemApp.Services
             };
             await db.TblinvoiceDetails.AddAsync(dr);
             await db.SaveChangesAsync();
-            InvoiceDTO pd = new InvoiceDTO()
-            {
-                InvoiceId = dr.InvoiceId,
-                CustomerId = dr.CustomerId,
-                InvoiceAmount = dr.InvoiceAmount,
-                InvoiceDate = dr.InvoiceDate
+            //InvoiceDTO pd = new InvoiceDTO()
+            //{
+            //    InvoiceId = dr.InvoiceId,
+            //    CustomerId = dr.CustomerId,
+            //    InvoiceAmount = dr.InvoiceAmount,
+            //    InvoiceDate = dr.InvoiceDate
 
-            };
-            return pd;
+            //};
+            d.InvoiceId = dr.InvoiceId;
+            return d;
 
         }
 
         public async Task<InvoiceModelDTO> GetInvoice(int Id)
         {
             TblinvoiceDetail d = await db.TblinvoiceDetails.FindAsync(Id);
-            InvoiceModelDTO md = GetInvoiceModel(d);
+            InvoiceModelDTO md = await GetInvoiceModel(d);
             return md;
         }
 
@@ -56,7 +57,7 @@ namespace InvoiceSystemApp.Services
             List<InvoiceModelDTO> lst = new List<InvoiceModelDTO>();
             foreach(TblinvoiceDetail d in await db.TblinvoiceDetails.ToListAsync())
             {
-                InvoiceModelDTO md = GetInvoiceModel(d);
+                InvoiceModelDTO md = await GetInvoiceModel(d);
 
                 lst.Add(md);
 
@@ -64,9 +65,25 @@ namespace InvoiceSystemApp.Services
             return lst;
         }
 
-        private InvoiceModelDTO GetInvoiceModel(TblinvoiceDetail d)
+        public async Task<PaymentFormDTO> SubmitPayment(PaymentFormDTO p)
         {
-            Tblcustomer c = db.Tblcustomers.Find(d.CustomerId);
+            TblinvoicePayment pay = new TblinvoicePayment()
+            {
+                InvoiceId = p.InvoiceId,
+                PaymentDate = p.PaymentDate,
+                PaymentAmount = p.PaymentAmount,
+                PaymentDescription = p.PaymentDescription,
+                PaymentMode = p.PaymentMode
+            };
+            await db.TblinvoicePayments.AddAsync(pay);
+            await db.SaveChangesAsync();
+            p.PaymentId = pay.PaymentId;
+            return p;
+        }
+
+        private async Task<InvoiceModelDTO> GetInvoiceModel(TblinvoiceDetail d)
+        {
+            Tblcustomer c = await db.Tblcustomers.FindAsync(d.CustomerId);
 
             List<TblinvoicePayment> payments = db.TblinvoicePayments.Where(e => e.InvoiceId.Equals(d.InvoiceId)).ToList();
             double PaidAmount = 0, RemainingAmount = 0;
@@ -88,6 +105,8 @@ namespace InvoiceSystemApp.Services
             {
                 status = "Paid";
             }
+             
+
             InvoiceModelDTO md = new InvoiceModelDTO()
             {
                 CustomerId = d.CustomerId,
@@ -97,9 +116,68 @@ namespace InvoiceSystemApp.Services
                 InvoiceId = d.InvoiceId,
                 PaidAmount = PaidAmount,
                 RemainingAmount = RemainingAmount,
-                Status = status
+                Status = status,
+                 Products= GetInvoiceWiseProducts(d.InvoiceId),
+                  Payments=  GetInvoiceWisePayments(d.InvoiceId) 
+                    
             };
+
             return md;
+        }
+
+
+        private  List<InvoiceProductDTO> GetInvoiceWiseProducts(int Id)
+        {
+            List<InvoiceProductDTO> lst = new List<Dtos.InvoiceProductDTO>();
+            foreach(TblinvoiceProduct p in db.TblinvoiceProducts.Where(e=>e.InvoiceId.Equals(Id)).ToList())
+            {
+                Tblproduct pr = db.Tblproducts.Find(p.ProductId);
+                double total=(pr.Rate+(pr.Rate*pr.Gst/100))*p.Quantity;
+                InvoiceProductDTO pd = new InvoiceProductDTO()
+                {
+                    ProductId = pr.ProductId,
+                    ProductName = pr.ProductName,
+                    Rate = pr.Rate,
+                    Gst = pr.Gst,
+                    Quantity = p.Quantity,
+                    TotalAmount = total
+                };
+                lst.Add(pd);
+
+            }
+            return lst;
+        }
+
+
+        private async Task<List<PaymentFormDTO>> GetInvoiceWisePayments(int Id)
+        {
+            List<PaymentFormDTO> lst = new List<PaymentFormDTO>();
+            foreach(TblinvoicePayment p in await db.TblinvoicePayments.Where(e=>e.InvoiceId.Equals(Id)).ToListAsync())
+            {
+                lst.Add(new PaymentFormDTO { 
+                 InvoiceId=p.InvoiceId,
+                  PaymentAmount=p.PaymentAmount,
+                   PaymentDate=p.PaymentDate,
+                    PaymentDescription=p.PaymentDescription,
+                     PaymentId=p.PaymentId,
+                      PaymentMode=p.PaymentMode
+                });
+            }
+            return lst;
+        }
+
+        private async Task<CustomerDTO> GetCustomer(int Id)
+        {
+            Tblcustomer c = await db.Tblcustomers.FindAsync(Id);
+            CustomerDTO cr = new CustomerDTO()
+            {
+                CustomerId = c.CustomerId,
+                CustomerName = c.CustomerName,
+                City = c.City,
+                EmailAddress = c.EmailAddress,
+                MobileNumber = c.MobileNumber
+            };
+            return cr;
         }
     }
 }

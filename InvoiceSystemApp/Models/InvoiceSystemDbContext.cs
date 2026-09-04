@@ -69,6 +69,7 @@ public partial class InvoiceSystemDbContext : DbContext
 
             entity.ToTable("tblinvoice_payments");
 
+            entity.Property(e => e.PaymentDate).HasColumnType("datetime");
             entity.Property(e => e.PaymentDescription)
                 .HasMaxLength(100)
                 .IsUnicode(false);

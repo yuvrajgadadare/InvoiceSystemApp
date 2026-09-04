@@ -15,5 +15,7 @@ public partial class TblinvoicePayment
 
     public string? PaymentDescription { get; set; }
 
+    public DateTime? PaymentDate { get; set; }
+
     public virtual TblinvoiceDetail Invoice { get; set; } = null!;
 }
