@@ -117,8 +117,8 @@ namespace InvoiceSystemApp.Services
                 PaidAmount = PaidAmount,
                 RemainingAmount = RemainingAmount,
                 Status = status,
-                 Products= GetInvoiceWiseProducts(d.InvoiceId),
-                  Payments=  GetInvoiceWisePayments(d.InvoiceId) 
+                //  Products= GetInvoiceWiseProducts(d.InvoiceId),
+                 // Payments=  GetInvoiceWisePayments(d.InvoiceId) 
                     
             };
 
@@ -126,10 +126,10 @@ namespace InvoiceSystemApp.Services
         }
 
 
-        private  List<InvoiceProductDTO> GetInvoiceWiseProducts(int Id)
+        public async Task< List<InvoiceProductDTO>> GetInvoiceWiseProducts(int Id)
         {
             List<InvoiceProductDTO> lst = new List<Dtos.InvoiceProductDTO>();
-            foreach(TblinvoiceProduct p in db.TblinvoiceProducts.Where(e=>e.InvoiceId.Equals(Id)).ToList())
+            foreach(TblinvoiceProduct p in await db.TblinvoiceProducts.Where(e=>e.InvoiceId.Equals(Id)).ToListAsync())
             {
                 Tblproduct pr = db.Tblproducts.Find(p.ProductId);
                 double total=(pr.Rate+(pr.Rate*pr.Gst/100))*p.Quantity;
@@ -149,7 +149,7 @@ namespace InvoiceSystemApp.Services
         }
 
 
-        private async Task<List<PaymentFormDTO>> GetInvoiceWisePayments(int Id)
+        public async Task<List<PaymentFormDTO>> GetInvoiceWisePayments(int Id)
         {
             List<PaymentFormDTO> lst = new List<PaymentFormDTO>();
             foreach(TblinvoicePayment p in await db.TblinvoicePayments.Where(e=>e.InvoiceId.Equals(Id)).ToListAsync())
@@ -179,5 +179,9 @@ namespace InvoiceSystemApp.Services
             };
             return cr;
         }
+
+        
+
+        
     }
 }

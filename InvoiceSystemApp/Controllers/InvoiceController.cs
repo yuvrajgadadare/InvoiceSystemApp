@@ -67,6 +67,8 @@ namespace InvoiceSystemApp.Controllers
             InvoiceModelDTO m =await  invoiceService.GetInvoice(id);
             CustomerDTO c = await customerService.GetCustomer(m.CustomerId);
             ViewData["customer"] = c;
+            ViewData["products"] = await invoiceService.GetInvoiceWiseProducts(id);
+            ViewData["payments"] = await invoiceService.GetInvoiceWisePayments(id);
             return View(m); 
         }
     }

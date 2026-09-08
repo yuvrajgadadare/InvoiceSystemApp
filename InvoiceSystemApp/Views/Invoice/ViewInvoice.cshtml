@@ -1,7 +1,124 @@
-﻿@{
+﻿@using InvoiceSystemApp.Dtos
+@model InvoiceModelDTO
+@{
     Layout = "~/Views/Shared/InvoiceLayout.cshtml";
+    CustomerDTO c = (CustomerDTO)ViewData["customer"];
+    List<InvoiceProductDTO> products = (List<InvoiceProductDTO>)ViewData["products"];
+    List<PaymentFormDTO> payments = (List<PaymentFormDTO>)ViewData["payments"];
+    int i = 1;
+    double amount = 0;
 }
-<h2>All Invoice</h2>
-<div class="row">
-    <h4>View Invoice</h4>
+ <input type="button" value="Print Invoice" id="btnprint" class="btn btn-primary" onclick="PrintInvoice()" />
+<div id="dvinvoice" style="border:1px solid gray;padding:2%;margin-top:2%">
+    <div class="container">
+        <div class="row mb-4">
+            <h4 style="text-align:center">View Invoice</h4>
+        </div>
+        <div class="row mb-4">
+            <table class="table table-borderless">
+                <tbody>
+                    <tr>
+                        <td style="width:70%">
+                            <div>Customer Name: <b>@c.CustomerName</b></div>
+                            <div>Email Address: <b>@c.EmailAddress</b></div>
+                            <div>Mobile Number: <b>@c.MobileNumber</b></div>
+                            <div>City: <b>@c.City</b></div>
+                        </td>
+                        <td style="width:30%">
+                            <div>#Invoice: <b>@Model.InvoiceId</b></div>
+                            <div>Invoice Date: <b>@Model.InvoiceDate.ToShortDateString()</b></div>
+                            <div>Invoice Amount: <b>@Model.InvoiceAmount</b></div>
+                            <div>Paid Amount: <b>@Model.PaidAmount</b></div>
+                            <div>Remaining Amount: <b>@Model.RemainingAmount</b></div>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="row mb-4">
+            <h4 class="text-center">Product Details</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Sr No</th>
+                        <th>Product Name</th>
+                        <th>Rate</th>
+                        <th>Gst</th>
+                        <th>Quanaity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var p in products)
+                    {
+                        amount += p.TotalAmount;
+                        <tr>
+                            <td>@i</td>
+                            <td>@p.ProductName</td>
+                            <td>@p.Rate</td>
+                            <td>@p.Gst</td>
+                            <td>@p.Quantity</td>
+                            <td>@p.TotalAmount</td>
+                        </tr>
+                        i++;
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" style="text-align:right">Total=</td>
+                        <td><b>@amount </b></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="row -mb-4">
+            @if (payments.Count > 0)
+            {
+                <h4 class="text-center">Payments</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Sr No</th>
+                            <th>Payment Date</th>
+                            <th>Payment Amount</th>
+                            <th>Payment Mode</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            i = 1;
+                        }
+                        @foreach (var p in payments)
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td>@p.PaymentDate.Value.ToShortDateString()</td>
+                                <td>@p.PaymentAmount</td>
+                                <td>@p.PaymentMode</td>
+                                <td>@p.PaymentDescription</td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <h5 class="text-center text-danger">No Payment Yet</h5>
+            }
+        </div>
+    </div>
 </div>
+<script>
+    const PrintInvoice=()=>{
+        var printContents = document.getElementById("dvinvoice").innerHTML;
+        var originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script>
